@@ -124,7 +124,7 @@ def visualizar_grafo(metro_map, ruta_optima, tiempo_optimo):
     # Colorear nodo de estación inicial en verde
     nx.draw_networkx_nodes(G, pos, nodelist=[estacion_inicial], node_size=50, node_color='green', ax=plot)
     
-    # Colorear nodo de estación final en rojo
+    # Colorear nodo de estación final en rojo+
     nx.draw_networkx_nodes(G, pos, nodelist=[estacion_final], node_size=50, node_color='red', ax=plot)
     
     # Dibujar la ruta óptima en rojo
@@ -135,9 +135,6 @@ def visualizar_grafo(metro_map, ruta_optima, tiempo_optimo):
     # Dibujar etiquetas de las estaciones
     labels = {estacion: estacion for estacion in G.nodes}
     nx.draw_networkx_labels(G, pos, labels, font_size=8, ax=plot)
-    
-    # Mostrar el gráfico
-    # Crear el lienzo de Tkinter para mostrar la figura
     ventanaRutaOptima = tk.Toplevel(ventana)
     ventanaRutaOptima.title("Ruta Óptima")
     ventanaRutaOptima.state("zoomed")
@@ -188,39 +185,63 @@ ventana = tk.Tk()
 ventana.title("Seleccionar Estaciones")
 ventana.state("zoomed")
 
+ventana.config(background="#ffffff")
 # Obtener el tamaño de la pantalla
 screen_width = ventana.winfo_screenwidth()
 screen_height = ventana.winfo_screenheight()
 
-
+titulo= tk.Label()
+titulo.config(text="METRO BLITZ",font="Arial 30 bold", justify="center")
+titulo.grid(row=0, columnspan=7, column=0)
+instrucciones = tk.Label()
+instrucciones.config(text="Seleccione la estacion inicial y la estacion final", font="Arial 15", justify="center")
+instrucciones.grid(row=1, columnspan=7, column=0)
 # Abrir la imagen
 image = Image.open("mapa-lineas-del-metro-guadalajara-1.png")
-
 # Calcular la relación de aspecto de la imagen
 aspect_ratio = image.width / image.height
-
 # Calcular el nuevo tamaño manteniendo la relación de aspecto
 if screen_height > screen_width:
-    new_width = screen_width-100
+    new_width = screen_width-200
     new_height = int(new_width / aspect_ratio)
 else:
-    new_height = screen_height-100
+    new_height = screen_height-200
     new_width = int(new_height * aspect_ratio)
 
 # Redimensionar la imagen al nuevo tamaño
 image = image.resize((new_width, new_height), Image.LANCZOS)
-
 # Crear un objeto PhotoImage
 photo = ImageTk.PhotoImage(image)
+# Crear un Label para ver la imagen
+image_label = ttk.Label(ventana, image=photo)
+image_label.grid(column=4, row=2, rowspan=15)  # Adjust the row and column as needed
+
+logo = Image.open("logoMetroBlitz.png")
+as_ratio = logo.width / logo.height
+# Calcular el nuevo tamaño manteniendo la relación de aspecto
+if screen_height > screen_width:
+    nw_width = screen_width/8
+    nw_height = int(nw_width / as_ratio)
+else:
+    nw_height = screen_height/8
+    nw_width = int(nw_height * as_ratio)
+
+logo = logo.resize((nw_width, nw_height), Image.LANCZOS)
+logoTk = ImageTk.PhotoImage(logo)
+logo_label = ttk.Label(ventana, image=logoTk)
+logo_label.grid(column=0, row=0)  # Adjust the row and column as needed
+
 
 style = ttk.Style()
+style.configure(".TButton", background="#ffffff")
+style.configure(".TLabel", background="#ffffff")
 style.configure("botonInicio.TButton", padding=6, relief="SUNKEN", background="green", foreground="green")
 style.map('botonInicio.TButton', background=[('active','green')])
 style.configure("botonDestino.TButton", padding=6, relief="SUNKEN", background="red", foreground="red")
-
+style.configure("botonBuscar.TButton", padding=6, relief="SUNKEN", font="Arial 20 bold", justify="center")
 # Crear botones para las estaciones
 columna = 0
-fila = 0
+fila = 2
 button_dict = {}
 for estacion in metro_map.keys():
     boton = ttk.Button(ventana, text=estacion)
@@ -232,13 +253,9 @@ for estacion in metro_map.keys():
         columna = 0
         fila += 1
 
-# Crear un Label para ver la imagen
-image_label = ttk.Label(ventana, image=photo)
-image_label.grid(column=4, row=0, rowspan=15)  # Adjust the row and column as needed
-
 # Crear botón para calcular ruta óptima
-boton_calcular = ttk.Button(ventana, text="Calcular Ruta Óptima", command=calcular_ruta_optima)
-boton_calcular.grid(row=0, column=5, columnspan=2, rowspan=15)  # Cambiar el número 3 por el número de columnas deseado
+boton_calcular = ttk.Button(ventana, text="Calcular Ruta Óptima", command=calcular_ruta_optima, style="botonBuscar.TButton")
+boton_calcular.grid(row=2, column=5, columnspan=2, rowspan=15)  # Cambiar el número 3 por el número de columnas deseado
 
 
 # Inicializar variables
