@@ -190,11 +190,26 @@ ventana.config(background="#ffffff")
 screen_width = ventana.winfo_screenwidth()
 screen_height = ventana.winfo_screenheight()
 
+Ayuda = None
+
+def mostrar_ayuda():
+    global Ayuda
+    ventanaAyuda = tk.Toplevel(ventana, background="#ffffff")
+    ventanaAyuda.title("Ayuda")
+    ventanaAyuda.resizable(False, False)
+    ventanaAyuda.geometry(f"{screen_width//2}x{screen_height//2}")
+    imagenAyuda = Image.open("menu_ayuda.png")
+    imagenAyuda = imagenAyuda.resize((int(imagenAyuda.width/2.5), int(imagenAyuda.height/2.5)), Image.LANCZOS)
+    Ayuda = ImageTk.PhotoImage(imagenAyuda)
+    ayudaLb = ttk.Label(ventanaAyuda, image=Ayuda)
+    ayudaLb.pack()
+
+
 titulo= tk.Label()
-titulo.config(text="METRO BLITZ",font="Arial 30 bold", justify="center")
+
 titulo.grid(row=0, columnspan=7, column=0)
 instrucciones = tk.Label()
-instrucciones.config(text="Seleccione la estacion inicial y la estacion final", font="Arial 15", justify="center")
+instrucciones.config(text="Seleccione la estacion inicial y la estacion final", background="#ffffff", font="Arial 15", justify="center")
 instrucciones.grid(row=1, columnspan=7, column=0)
 # Abrir la imagen
 image = Image.open("mapa-lineas-del-metro-guadalajara-1.png")
@@ -202,10 +217,10 @@ image = Image.open("mapa-lineas-del-metro-guadalajara-1.png")
 aspect_ratio = image.width / image.height
 # Calcular el nuevo tamaño manteniendo la relación de aspecto
 if screen_height > screen_width:
-    new_width = screen_width-200
+    new_width = screen_width-270
     new_height = int(new_width / aspect_ratio)
 else:
-    new_height = screen_height-200
+    new_height = screen_height-270
     new_width = int(new_height * aspect_ratio)
 
 # Redimensionar la imagen al nuevo tamaño
@@ -220,17 +235,15 @@ logo = Image.open("logoMetroBlitz.png")
 as_ratio = logo.width / logo.height
 # Calcular el nuevo tamaño manteniendo la relación de aspecto
 if screen_height > screen_width:
-    nw_width = screen_width/8
+    nw_width = screen_width/6
     nw_height = int(nw_width / as_ratio)
 else:
-    nw_height = screen_height/8
+    nw_height = screen_height/6
     nw_width = int(nw_height * as_ratio)
 
-logo = logo.resize((nw_width, nw_height), Image.LANCZOS)
+logo = logo.resize((int(nw_width), int(nw_height)), Image.LANCZOS)
 logoTk = ImageTk.PhotoImage(logo)
-logo_label = ttk.Label(ventana, image=logoTk)
-logo_label.grid(column=0, row=0)  # Adjust the row and column as needed
-
+titulo.config(image=logoTk,font="Arial 30 bold", justify="center", background="#ffffff")
 
 style = ttk.Style()
 style.configure(".TButton", background="#ffffff")
@@ -238,13 +251,14 @@ style.configure(".TLabel", background="#ffffff")
 style.configure("botonInicio.TButton", padding=6, relief="SUNKEN", background="green", foreground="green")
 style.map('botonInicio.TButton', background=[('active','green')])
 style.configure("botonDestino.TButton", padding=6, relief="SUNKEN", background="red", foreground="red")
-style.configure("botonBuscar.TButton", padding=6, relief="SUNKEN", font="Arial 20 bold", justify="center")
+style.configure("botonBuscar.TButton", padding=6, relief="SUNKEN", font="Arial 20 bold", justify="center", background="#ffffff")
+style.configure("ayuda.TButton", padding=0, relief="SUNKEN", font="Arial 20 bold", justify="center", background="#ffffff")
 # Crear botones para las estaciones
 columna = 0
 fila = 2
 button_dict = {}
 for estacion in metro_map.keys():
-    boton = ttk.Button(ventana, text=estacion)
+    boton = ttk.Button(ventana, text=estacion, style="TButton")
     boton.grid(row=fila, column=columna)
     boton.bind("<Button-1>", seleccionar_estaciones)
     button_dict[f"boton_{estacion}"] = boton
@@ -255,8 +269,10 @@ for estacion in metro_map.keys():
 
 # Crear botón para calcular ruta óptima
 boton_calcular = ttk.Button(ventana, text="Calcular Ruta Óptima", command=calcular_ruta_optima, style="botonBuscar.TButton")
-boton_calcular.grid(row=2, column=5, columnspan=2, rowspan=15)  # Cambiar el número 3 por el número de columnas deseado
+boton_calcular.grid(row=2, column=5, rowspan=15)  # Cambiar el número 3 por el número de columnas deseado
 
+boton_ayuda = ttk.Button(ventana, text="?", style="ayuda.TButton", command=mostrar_ayuda)
+boton_ayuda.grid(row=0, column=6)
 
 # Inicializar variables
 estacion_inicial = None
